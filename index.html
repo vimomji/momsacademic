@@ -1,0 +1,1423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Class Diary — Academic Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,600;0,700;1,600&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #F7F2E4;
+    --paper-dark: #EFE7D3;
+    --ink: #2B2B28;
+    --ink-soft: #6b6558;
+    --diary-blue: #2B4C7E;
+    --diary-blue-dark: #1d3559;
+    --margin-red: #B23A48;
+    --marigold: #E8A33D;
+    --stamp-green: #3F7154;
+    --line: #d8cfb8;
+    --shadow: 0 4px 14px rgba(43,43,40,0.08);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--paper);
+    background-image:
+      linear-gradient(var(--line) 1px, transparent 1px);
+    background-size: 100% 34px;
+    background-position: 0 128px;
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    padding-bottom: 60px;
+  }
+
+  /* ---------- Header ---------- */
+  header {
+    background: var(--diary-blue);
+    background-image: linear-gradient(135deg, var(--diary-blue) 0%, var(--diary-blue-dark) 100%);
+    color: #fff;
+    padding: 28px 20px 22px;
+    position: relative;
+    box-shadow: var(--shadow);
+  }
+  header::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: -8px;
+    height: 8px;
+    background: repeating-linear-gradient(90deg, var(--margin-red) 0 14px, transparent 14px 28px);
+    opacity: .55;
+  }
+  .header-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .brand {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .brand-mark {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    background: var(--marigold);
+    color: #3a2a06;
+    padding: 3px 8px;
+    border-radius: 3px;
+    transform: rotate(-3deg);
+    display: inline-block;
+  }
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-weight: 700;
+    font-size: 28px;
+    margin: 4px 0 0;
+    letter-spacing: 0.2px;
+  }
+  .tagline {
+    font-size: 13px;
+    color: #cfd9ec;
+    margin-top: 2px;
+  }
+
+  #kidSelectWrap { display:flex; gap:8px; align-items:center; }
+  select#kidSelect {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+    background: rgba(255,255,255,0.14);
+    color: #fff;
+  }
+  select#kidSelect option { color: var(--ink); }
+  button.ghost-btn {
+    background: rgba(255,255,255,0.14);
+    border: 1px solid rgba(255,255,255,0.35);
+    color: #fff;
+    font-size: 13px;
+    padding: 7px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+  }
+  button.ghost-btn:hover { background: rgba(255,255,255,0.24); }
+
+  /* ---------- Tabs (diary dividers) ---------- */
+  nav.tabs {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    padding: 0 14px;
+    gap: 6px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+  }
+  .tab-btn {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: var(--paper-dark);
+    border: 1px solid var(--line);
+    border-bottom: none;
+    color: var(--ink-soft);
+    padding: 10px 16px 12px;
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+    position: relative;
+    top: 1px;
+  }
+  .tab-btn.active {
+    background: #fff;
+    color: var(--diary-blue-dark);
+    font-weight: 700;
+    border-color: var(--line);
+  }
+
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 14px;
+  }
+
+  .page {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 0 10px 10px 10px;
+    padding: 24px 20px 28px;
+    position: relative;
+    box-shadow: var(--shadow);
+    margin-bottom: 40px;
+  }
+  .page::before {
+    content: "";
+    position: absolute;
+    left: 46px; top: 0; bottom: 0;
+    width: 1px;
+    background: var(--margin-red);
+    opacity: 0.35;
+  }
+  .page-inner { padding-left: 26px; }
+  .page[data-hidden="true"] { display: none; }
+
+  section h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 21px;
+    margin: 0 0 4px;
+    color: var(--diary-blue-dark);
+  }
+  .section-sub { font-size: 13px; color: var(--ink-soft); margin-bottom: 18px; }
+
+  /* ---------- Stamp badge ---------- */
+  .stamp {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border: 2px solid var(--stamp-green);
+    color: var(--stamp-green);
+    padding: 4px 9px;
+    border-radius: 5px;
+    transform: rotate(-4deg);
+  }
+  .stamp.due {
+    border-color: var(--margin-red);
+    color: var(--margin-red);
+  }
+
+  /* ---------- Dashboard ---------- */
+  .weekfocus-card {
+    background: linear-gradient(180deg, #fffaf0 0%, #fff 60%);
+    border: 1px dashed var(--marigold);
+    border-radius: 10px;
+    padding: 18px 18px 6px;
+    margin-bottom: 22px;
+  }
+  .weekfocus-card h3 {
+    margin: 0 0 10px;
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 18px;
+    color: #7a5314;
+  }
+  .task-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line);
+    font-size: 14px;
+  }
+  .task-row:last-child { border-bottom: none; }
+  .task-icon {
+    flex-shrink: 0;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size: 12px;
+    color: #fff;
+    margin-top: 1px;
+  }
+  .task-icon.hi { background: var(--margin-red); }
+  .task-icon.mid { background: var(--marigold); }
+  .task-icon.lo { background: var(--diary-blue); }
+  .empty-note { font-size: 13px; color: var(--ink-soft); padding: 6px 0 12px; font-style: italic; }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px,1fr));
+    gap: 12px;
+    margin-bottom: 22px;
+  }
+  .stat-box {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 14px;
+    background: var(--paper-dark);
+  }
+  .stat-box .num {
+    font-family: 'Fraunces', serif;
+    font-weight: 700;
+    font-size: 26px;
+    color: var(--diary-blue-dark);
+  }
+  .stat-box .lab {
+    font-size: 11.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-soft);
+    margin-top: 2px;
+  }
+
+  /* ---------- Forms ---------- */
+  .form-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+    align-items: flex-end;
+  }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
+  input, select, textarea {
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    padding: 9px 11px;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    background: #fffdf8;
+    color: var(--ink);
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: 2px solid var(--diary-blue);
+    outline-offset: 1px;
+  }
+  button.primary {
+    background: var(--diary-blue);
+    color: #fff;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 7px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+  }
+  button.primary:hover { background: var(--diary-blue-dark); }
+  button.text-btn {
+    background: none;
+    border: none;
+    color: var(--margin-red);
+    font-size: 12.5px;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* ---------- Homework list ---------- */
+  .hw-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .hw-item:last-child { border-bottom: none; }
+  .hw-check {
+    width: 22px; height: 22px;
+    border-radius: 5px;
+    border: 2px solid var(--diary-blue);
+    flex-shrink: 0;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    font-size: 13px;
+  }
+  .hw-check.done { background: var(--stamp-green); border-color: var(--stamp-green); }
+  .hw-main { flex: 1; min-width: 0; }
+  .hw-main .subj {
+    font-weight: 700;
+    font-size: 12px;
+    color: var(--diary-blue-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .hw-main .desc { font-size: 14.5px; margin-top: 1px; }
+  .hw-main .desc.done-text { text-decoration: line-through; color: var(--ink-soft); }
+  .hw-main .due { font-size: 12px; color: var(--ink-soft); margin-top: 3px; }
+  .hw-main .due.overdue { color: var(--margin-red); font-weight: 700; }
+
+  /* ---------- Syllabus ---------- */
+  .subject-block { margin-bottom: 22px; }
+  .subject-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+  .subject-head h4 {
+    font-family: 'Fraunces', serif;
+    font-size: 16px;
+    margin: 0;
+    color: var(--ink);
+  }
+  .progress-track {
+    height: 8px;
+    background: var(--paper-dark);
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 10px;
+  }
+  .progress-fill { height: 100%; background: var(--marigold); }
+  .chapter-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 0;
+    font-size: 14px;
+  }
+  .chapter-row input[type=checkbox] { width: 17px; height: 17px; accent-color: var(--stamp-green); }
+  .chapter-row .cdone { text-decoration: line-through; color: var(--ink-soft); }
+  .add-chapter-row { display: flex; gap: 8px; margin-top: 8px; }
+  .add-chapter-row input { flex: 1; }
+
+  /* ---------- WhatsApp checkin ---------- */
+  .wa-week {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+  .wa-day {
+    flex: 1;
+    min-width: 74px;
+    text-align: center;
+    padding: 14px 6px;
+    border-radius: 9px;
+    border: 2px solid var(--line);
+    cursor: pointer;
+    background: var(--paper-dark);
+  }
+  .wa-day.checked { background: #eaf3ec; border-color: var(--stamp-green); }
+  .wa-day .dlabel { font-size: 11px; text-transform: uppercase; color: var(--ink-soft); letter-spacing: .04em; }
+  .wa-day .ddate { font-family: 'Space Mono', monospace; font-size: 12px; margin: 4px 0; }
+  .wa-day .dmark { font-size: 18px; }
+  .streak-line { font-size: 13.5px; color: var(--ink-soft); }
+  .streak-line b { color: var(--stamp-green); }
+
+  /* ---------- WhatsApp daily entries ---------- */
+  .wa-entry {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    background: var(--paper-dark);
+  }
+  .wa-entry.today { border-color: var(--marigold); background: #fffaf0; }
+  .wa-entry-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 13px;
+  }
+  .wa-entry-head .wdate { font-weight: 700; color: var(--diary-blue-dark); }
+  .wa-entry-head label { display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--ink-soft); cursor: pointer; }
+  .wa-entry-head input[type=checkbox] { width: 16px; height: 16px; accent-color: var(--stamp-green); }
+  .wa-entry textarea {
+    width: 100%;
+    min-height: 54px;
+    resize: vertical;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* ---------- Events / Exams list ---------- */
+  .list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .list-item:last-child { border-bottom: none; }
+  .list-item .li-main .li-title { font-weight: 700; font-size: 14.5px; }
+  .list-item .li-main .li-date { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--diary-blue-dark); margin: 2px 0; }
+  .list-item .li-main .li-notes { font-size: 13px; color: var(--ink-soft); margin-top: 2px; }
+  .li-badge {
+    font-family: 'Space Mono', monospace;
+    font-size: 10.5px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 5px;
+    font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .li-badge.upcoming { background: #eaf3ec; color: var(--stamp-green); }
+  .li-badge.soon { background: #fdf0e0; color: #8a5a12; }
+  .li-badge.past { background: var(--paper-dark); color: var(--ink-soft); }
+
+  /* ---------- Documents ---------- */
+  .doc-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .doc-item:last-child { border-bottom: none; }
+  .doc-icon {
+    width: 34px; height: 34px;
+    border-radius: 7px;
+    background: var(--diary-blue);
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+  .doc-main { flex: 1; min-width: 0; }
+  .doc-main .dname { font-weight: 700; font-size: 14px; }
+  .doc-main .dmeta { font-size: 12px; color: var(--ink-soft); }
+  .doc-actions { display: flex; gap: 10px; flex-shrink: 0; }
+  .doc-actions a, .doc-actions button {
+    font-size: 12.5px;
+    text-decoration: underline;
+    color: var(--diary-blue-dark);
+    background: none; border: none; cursor: pointer;
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* ---------- Kid setup ---------- */
+  .kid-card {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    background: var(--paper-dark);
+  }
+  .kid-card .kname { font-weight: 700; }
+  .kid-card .kclass { font-size: 12.5px; color: var(--ink-soft); }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--ink-soft);
+  }
+  .empty-state .em-icon { font-size: 34px; margin-bottom: 8px; }
+
+  footer {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px;
+    font-size: 12px;
+    color: var(--ink-soft);
+    text-align: center;
+  }
+
+  @media (max-width: 600px) {
+    h1 { font-size: 22px; }
+    .page { padding: 18px 12px 22px; }
+    .page-inner { padding-left: 14px; }
+    .page::before { left: 30px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div>
+      <div class="brand">
+        <span class="brand-mark">ROLL CALL</span>
+      </div>
+      <h1>The Class Diary</h1>
+      <div class="tagline">One page a day, everything school in one place.</div>
+    </div>
+    <div id="kidSelectWrap">
+      <select id="kidSelect" onchange="onKidChange()"></select>
+      <button class="ghost-btn" onclick="showTab('setup')">+ Manage kids</button>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs" id="tabsNav">
+  <button class="tab-btn" data-tab="dashboard" onclick="showTab('dashboard')">This Week</button>
+  <button class="tab-btn" data-tab="homework" onclick="showTab('homework')">Homework</button>
+  <button class="tab-btn" data-tab="syllabus" onclick="showTab('syllabus')">Syllabus</button>
+  <button class="tab-btn" data-tab="whatsapp" onclick="showTab('whatsapp')">WhatsApp</button>
+  <button class="tab-btn" data-tab="events" onclick="showTab('events')">Events</button>
+  <button class="tab-btn" data-tab="exams" onclick="showTab('exams')">Exams</button>
+  <button class="tab-btn" data-tab="documents" onclick="showTab('documents')">Documents</button>
+  <button class="tab-btn" data-tab="setup" onclick="showTab('setup')">Kids</button>
+</nav>
+
+<main>
+
+  <!-- DASHBOARD -->
+  <div class="page" id="page-dashboard" data-hidden="false">
+    <div class="page-inner">
+      <section>
+        <h2>This Week's Focus</h2>
+        <div class="section-sub" id="dashSub">Auto-built from your homework log, syllabus checklist, and WhatsApp check-ins.</div>
+
+        <div class="stat-grid" id="statGrid"></div>
+
+        <div class="weekfocus-card">
+          <h3>&#9998; Weekly to-do</h3>
+          <div id="weeklyTasks"></div>
+        </div>
+
+        <div class="weekfocus-card">
+          <h3>&#128172; Recent WhatsApp notes</h3>
+          <div id="recentWaNotes"></div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- HOMEWORK -->
+  <div class="page" id="page-homework" data-hidden="true">
+    <div class="page-inner">
+      <section>
+        <h2>Homework Log</h2>
+        <div class="section-sub">Log what's assigned, then tick it off when it's done.</div>
+
+        <div class="form-row">
+          <div class="field">
+            <label>Subject</label>
+            <input id="hwSubject" placeholder="e.g. Maths" style="width:130px">
+          </div>
+          <div class="field" style="flex:1; min-width:180px;">
+            <label>Homework</label>
+            <input id="hwDesc" placeholder="e.g. Worksheet 4, Q1–10">
+          </div>
+          <div class="field">
+            <label>Due date</label>
+            <input id="hwDue" type="date">
+          </div>
+          <button class="primary" onclick="addHomework()">Add</button>
+        </div>
+
+        <div id="hwList"></div>
+      </section>
+    </div>
+  </div>
+
+  <!-- SYLLABUS -->
+  <div class="page" id="page-syllabus" data-hidden="true">
+    <div class="page-inner">
+      <section>
+        <h2>CBSE Syllabus Checklist</h2>
+        <div class="section-sub">A fixed reference checklist — tick chapters off as they're covered in class. Add or edit chapters freely; this list isn't synced to anything, so keep it updated by hand.</div>
+
+        <div class="form-row">
+          <div class="field">
+            <label>New subject</label>
+            <input id="newSubjectName" placeholder="e.g. Sanskrit" style="width:180px">
+          </div>
+          <button class="primary" onclick="addSubject()">Add subject</button>
+        </div>
+
+        <div id="syllabusList"></div>
+      </section>
+    </div>
+  </div>
+
+  <!-- WHATSAPP -->
+  <div class="page" id="page-whatsapp" data-hidden="true">
+    <div class="page-inner">
+      <section>
+        <h2>School WhatsApp Log</h2>
+        <div class="section-sub">Tick the box on days you checked the group, and jot down anything important that came through — circulars, homework reminders, notices. Shows up in This Week's Focus too.</div>
+
+        <div class="streak-line" id="streakLine" style="margin-bottom:14px;"></div>
+        <div id="waWeek"></div>
+      </section>
+    </div>
+  </div>
+
+  <!-- EVENTS -->
+  <div class="page" id="page-events" data-hidden="true">
+    <div class="page-inner">
+      <section>
+        <h2>School Events</h2>
+        <div class="section-sub">PTMs, sports day, annual function, holidays — anything on the school calendar.</div>
+
+        <div class="form-row">
+          <div class="field" style="flex:1; min-width:180px;">
+            <label>Event</label>
+            <input id="evTitle" placeholder="e.g. Annual Sports Day">
+          </div>
+          <div class="field">
+            <label>Date</label>
+            <input id="evDate" type="date">
+          </div>
+          <div class="field" style="flex:1; min-width:160px;">
+            <label>Notes</label>
+            <input id="evNotes" placeholder="Venue, time, what to bring...">
+          </div>
+          <button class="primary" onclick="addEvent()">Add</button>
+        </div>
+
+        <div id="eventsList"></div>
+      </section>
+    </div>
+  </div>
+
+  <!-- EXAMS -->
+  <div class="page" id="page-exams" data-hidden="true">
+    <div class="page-inner">
+      <section>
+        <h2>Exam Schedule</h2>
+        <div class="section-sub">Track upcoming exams and what portion/syllabus they cover.</div>
+
+        <div class="form-row">
+          <div class="field">
+            <label>Subject</label>
+            <input id="exSubject" placeholder="e.g. Science" style="width:130px">
+          </div>
+          <div class="field">
+            <label>Date</label>
+            <input id="exDate" type="date">
+          </div>
+          <div class="field" style="flex:1; min-width:200px;">
+            <label>Portion / syllabus</label>
+            <input id="exPortion" placeholder="e.g. Ch 1–4, Motion & Force">
+          </div>
+          <button class="primary" onclick="addExam()">Add</button>
+        </div>
+
+        <div id="examsList"></div>
+      </section>
+    </div>
+  </div>
+
+  <!-- DOCUMENTS -->
+  <div class="page" id="page-documents" data-hidden="true">
+    <div class="page-inner">
+      <section>
+        <h2>Documents</h2>
+        <div class="section-sub">Upload portion sheets, exam papers, or any school document (PDF, Word, image) — kept on this device only, so you can pull it up whenever needed. Browser storage has limited space, so keep files reasonably small (a few MB).</div>
+
+        <div class="form-row">
+          <div class="field" style="flex:1; min-width:180px;">
+            <label>Label</label>
+            <input id="docLabel" placeholder="e.g. Term 1 Maths Portion">
+          </div>
+          <div class="field">
+            <label>File</label>
+            <input id="docFile" type="file">
+          </div>
+          <button class="primary" onclick="addDocument()">Upload</button>
+        </div>
+        <div id="docStatus" class="empty-note" style="display:none;"></div>
+
+        <div id="docsList"></div>
+      </section>
+    </div>
+  </div>
+
+  <!-- SETUP -->
+  <div class="page" id="page-setup" data-hidden="true">
+    <div class="page-inner">
+      <section>
+        <h2>Kids</h2>
+        <div class="section-sub">Add each child. Homework, syllabus and WhatsApp check-ins are tracked separately per child.</div>
+
+        <div class="form-row">
+          <div class="field">
+            <label>Name</label>
+            <input id="newKidName" placeholder="e.g. Ananya">
+          </div>
+          <div class="field">
+            <label>Class</label>
+            <select id="newKidClass">
+              <option>Nursery</option><option>LKG</option><option>UKG</option>
+              <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+              <option>6</option><option>7</option><option>8</option><option>9</option><option>10</option>
+              <option>11</option><option>12</option>
+            </select>
+          </div>
+          <button class="primary" onclick="addKid()">Add child</button>
+        </div>
+
+        <div id="kidList"></div>
+      </section>
+    </div>
+  </div>
+
+</main>
+
+<footer>Everything here is saved on this device only, in your browser. Nothing is sent anywhere.</footer>
+
+<script>
+/* ---------------- Storage ---------------- */
+const STORE_KEY = 'classDiaryData_v1';
+let memoryFallback = null;
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) { /* fall through */ }
+  if (memoryFallback) return memoryFallback;
+  return { kids: [], activeKidId: null, homework: [], syllabus: {}, whatsapp: {}, events: [], exams: [], documents: [] };
+}
+function saveData() {
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify(data));
+    return true;
+  } catch (e) {
+    memoryFallback = data; // in-memory-only fallback for this session
+    return false;
+  }
+}
+
+let data = loadData();
+if (!data.events) data.events = [];
+if (!data.exams) data.exams = [];
+if (!data.documents) data.documents = [];
+
+/* ---------------- Default CBSE-style syllabus templates ---------------- */
+const DEFAULT_TEMPLATES = {
+  "Maths": ["Number Systems","Fractions & Decimals","Algebra Basics","Geometry — Lines & Angles","Mensuration","Data Handling"],
+  "Science": ["Food & Nutrition","Materials Around Us","The World of the Living","Motion & Force","Natural Phenomena","Natural Resources"],
+  "English": ["Reading Comprehension","Grammar — Tenses","Grammar — Parts of Speech","Writing Skills","Literature Reader Ch. 1–3","Literature Reader Ch. 4–6"],
+  "Hindi": ["गद्य खंड 1-3","पद्य खंड 1-3","व्याकरण — संज्ञा/सर्वनाम","व्याकरण — काल","लेखन कौशल"],
+  "Social Science": ["History — Early Societies","Geography — Earth & Globe","Civics — Government Basics","History — Medieval India","Geography — Climate","Civics — Local Government"]
+};
+
+/* ---------------- Utilities ---------------- */
+function uid() { return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
+function todayISO() { return new Date().toISOString().slice(0,10); }
+function fmtDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso + 'T00:00:00');
+  return d.toLocaleDateString('en-IN', { day:'numeric', month:'short' });
+}
+function activeKid() { return data.kids.find(k => k.id === data.activeKidId); }
+function ensureKidData(kidId) {
+  if (!data.syllabus[kidId]) data.syllabus[kidId] = {};
+  if (!data.whatsapp[kidId]) data.whatsapp[kidId] = {};
+}
+
+/* ---------------- Tabs ---------------- */
+function showTab(tab) {
+  document.querySelectorAll('.page').forEach(p => p.dataset.hidden = 'true');
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('page-' + tab).dataset.hidden = 'false';
+  const btn = document.querySelector('.tab-btn[data-tab="' + tab + '"]');
+  if (btn) btn.classList.add('active');
+  renderAll();
+}
+
+/* ---------------- Kid select / setup ---------------- */
+function renderKidSelect() {
+  const sel = document.getElementById('kidSelect');
+  sel.innerHTML = '';
+  if (data.kids.length === 0) {
+    const opt = document.createElement('option');
+    opt.textContent = 'No child added yet';
+    sel.appendChild(opt);
+    return;
+  }
+  data.kids.forEach(k => {
+    const opt = document.createElement('option');
+    opt.value = k.id;
+    opt.textContent = k.name + ' · Class ' + k.cls;
+    if (k.id === data.activeKidId) opt.selected = true;
+    sel.appendChild(opt);
+  });
+}
+function onKidChange() {
+  data.activeKidId = document.getElementById('kidSelect').value;
+  saveData();
+  renderAll();
+}
+function addKid() {
+  const nameEl = document.getElementById('newKidName');
+  const clsEl = document.getElementById('newKidClass');
+  const name = nameEl.value.trim();
+  if (!name) { nameEl.focus(); return; }
+  const id = uid();
+  data.kids.push({ id, name, cls: clsEl.value });
+  ensureKidData(id);
+  // seed default syllabus templates for this kid
+  Object.keys(DEFAULT_TEMPLATES).forEach(subject => {
+    data.syllabus[id][subject] = DEFAULT_TEMPLATES[subject].map(name => ({ id: uid(), name, done: false }));
+  });
+  if (!data.activeKidId) data.activeKidId = id;
+  nameEl.value = '';
+  saveData();
+  renderAll();
+}
+function removeKid(id) {
+  if (!confirm('Remove this child and all their logged data? This cannot be undone.')) return;
+  data.kids = data.kids.filter(k => k.id !== id);
+  data.homework = data.homework.filter(h => h.kidId !== id);
+  data.events = data.events.filter(e => e.kidId !== id);
+  data.exams = data.exams.filter(e => e.kidId !== id);
+  data.documents = data.documents.filter(d => d.kidId !== id);
+  delete data.syllabus[id];
+  delete data.whatsapp[id];
+  if (data.activeKidId === id) data.activeKidId = data.kids.length ? data.kids[0].id : null;
+  saveData();
+  renderAll();
+}
+function renderKidList() {
+  const wrap = document.getElementById('kidList');
+  wrap.innerHTML = '';
+  if (data.kids.length === 0) {
+    wrap.innerHTML = '<div class="empty-state"><div class="em-icon">&#128118;</div>Add your first child above to get started.</div>';
+    return;
+  }
+  data.kids.forEach(k => {
+    const div = document.createElement('div');
+    div.className = 'kid-card';
+    div.innerHTML = `
+      <div><div class="kname">${escapeHtml(k.name)}</div><div class="kclass">Class ${escapeHtml(k.cls)}</div></div>
+      <button class="text-btn" onclick="removeKid('${k.id}')">Remove</button>
+    `;
+    wrap.appendChild(div);
+  });
+}
+
+/* ---------------- Homework ---------------- */
+function addHomework() {
+  const kid = activeKid();
+  if (!kid) { alert('Add a child first, in the Kids tab.'); return; }
+  const subject = document.getElementById('hwSubject').value.trim();
+  const desc = document.getElementById('hwDesc').value.trim();
+  const due = document.getElementById('hwDue').value;
+  if (!subject || !desc) return;
+  data.homework.push({ id: uid(), kidId: kid.id, subject, desc, due, done: false, createdAt: todayISO() });
+  document.getElementById('hwSubject').value = '';
+  document.getElementById('hwDesc').value = '';
+  document.getElementById('hwDue').value = '';
+  saveData();
+  renderAll();
+}
+function toggleHomework(id) {
+  const hw = data.homework.find(h => h.id === id);
+  if (hw) hw.done = !hw.done;
+  saveData();
+  renderAll();
+}
+function deleteHomework(id) {
+  data.homework = data.homework.filter(h => h.id !== id);
+  saveData();
+  renderAll();
+}
+function renderHomework() {
+  const wrap = document.getElementById('hwList');
+  wrap.innerHTML = '';
+  const kid = activeKid();
+  if (!kid) { wrap.innerHTML = '<div class="empty-state">Add a child to start logging homework.</div>'; return; }
+  const items = data.homework.filter(h => h.kidId === kid.id)
+    .sort((a,b) => (a.done - b.done) || (a.due || '9999').localeCompare(b.due || '9999'));
+  if (items.length === 0) {
+    wrap.innerHTML = '<div class="empty-state"><div class="em-icon">&#128221;</div>No homework logged yet.</div>';
+    return;
+  }
+  const today = todayISO();
+  items.forEach(h => {
+    const overdue = h.due && h.due < today && !h.done;
+    const row = document.createElement('div');
+    row.className = 'hw-item';
+    row.innerHTML = `
+      <div class="hw-check ${h.done ? 'done' : ''}" onclick="toggleHomework('${h.id}')">${h.done ? '&#10003;' : ''}</div>
+      <div class="hw-main">
+        <div class="subj">${escapeHtml(h.subject)}</div>
+        <div class="desc ${h.done ? 'done-text' : ''}">${escapeHtml(h.desc)}</div>
+        ${h.due ? `<div class="due ${overdue ? 'overdue' : ''}">${overdue ? 'Overdue — ' : 'Due '}${fmtDate(h.due)}</div>` : ''}
+      </div>
+      <button class="text-btn" onclick="deleteHomework('${h.id}')">Delete</button>
+    `;
+    wrap.appendChild(row);
+  });
+}
+
+/* ---------------- Syllabus ---------------- */
+function addSubject() {
+  const kid = activeKid();
+  if (!kid) { alert('Add a child first, in the Kids tab.'); return; }
+  const nameEl = document.getElementById('newSubjectName');
+  const name = nameEl.value.trim();
+  if (!name) return;
+  ensureKidData(kid.id);
+  if (!data.syllabus[kid.id][name]) data.syllabus[kid.id][name] = [];
+  nameEl.value = '';
+  saveData();
+  renderAll();
+}
+function addChapter(subject) {
+  const kid = activeKid();
+  const input = document.getElementById('newchap-' + cssSafe(subject));
+  const name = input.value.trim();
+  if (!name) return;
+  data.syllabus[kid.id][subject].push({ id: uid(), name, done: false });
+  input.value = '';
+  saveData();
+  renderAll();
+}
+function toggleChapter(subject, chapId) {
+  const kid = activeKid();
+  const chap = data.syllabus[kid.id][subject].find(c => c.id === chapId);
+  if (chap) chap.done = !chap.done;
+  saveData();
+  renderAll();
+}
+function removeSubject(subject) {
+  if (!confirm('Remove the "' + subject + '" checklist for this child?')) return;
+  const kid = activeKid();
+  delete data.syllabus[kid.id][subject];
+  saveData();
+  renderAll();
+}
+function cssSafe(s) { return s.replace(/[^a-zA-Z0-9]/g, '_'); }
+
+function renderSyllabus() {
+  const wrap = document.getElementById('syllabusList');
+  wrap.innerHTML = '';
+  const kid = activeKid();
+  if (!kid) { wrap.innerHTML = '<div class="empty-state">Add a child to build their syllabus checklist.</div>'; return; }
+  ensureKidData(kid.id);
+  const subjects = data.syllabus[kid.id];
+  const names = Object.keys(subjects);
+  if (names.length === 0) {
+    wrap.innerHTML = '<div class="empty-state">No subjects yet — add one above.</div>';
+    return;
+  }
+  names.forEach(subject => {
+    const chapters = subjects[subject];
+    const doneCount = chapters.filter(c => c.done).length;
+    const pct = chapters.length ? Math.round((doneCount / chapters.length) * 100) : 0;
+    const block = document.createElement('div');
+    block.className = 'subject-block';
+    block.innerHTML = `
+      <div class="subject-head">
+        <h4>${escapeHtml(subject)}</h4>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <span class="section-sub" style="margin:0;">${doneCount}/${chapters.length} · ${pct}%</span>
+          <button class="text-btn" onclick="removeSubject('${escapeAttr(subject)}')">Remove</button>
+        </div>
+      </div>
+      <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+      <div class="chapters"></div>
+      <div class="add-chapter-row">
+        <input id="newchap-${cssSafe(subject)}" placeholder="Add a chapter/topic">
+        <button class="primary" onclick="addChapter('${escapeAttr(subject)}')">Add</button>
+      </div>
+    `;
+    const chapWrap = block.querySelector('.chapters');
+    chapters.forEach(c => {
+      const row = document.createElement('div');
+      row.className = 'chapter-row';
+      row.innerHTML = `
+        <input type="checkbox" ${c.done ? 'checked' : ''} onchange="toggleChapter('${escapeAttr(subject)}','${c.id}')">
+        <span class="${c.done ? 'cdone' : ''}">${escapeHtml(c.name)}</span>
+      `;
+      chapWrap.appendChild(row);
+    });
+    wrap.appendChild(block);
+  });
+}
+
+/* ---------------- WhatsApp check-in ---------------- */
+function last7Dates() {
+  const arr = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    arr.push(d.toISOString().slice(0,10));
+  }
+  return arr;
+}
+function getWaEntry(kidId, dateStr) {
+  const raw = data.whatsapp[kidId][dateStr];
+  if (raw && typeof raw === 'object') return raw;
+  // migrate old boolean format
+  return { checked: !!raw, message: '' };
+}
+function toggleWaChecked(dateStr) {
+  const kid = activeKid();
+  if (!kid) return;
+  ensureKidData(kid.id);
+  const entry = getWaEntry(kid.id, dateStr);
+  entry.checked = !entry.checked;
+  data.whatsapp[kid.id][dateStr] = entry;
+  saveData();
+  renderDashboard();
+  const line = document.getElementById('streakLine');
+  if (line) renderWhatsapp();
+}
+function updateWaMessage(dateStr, text) {
+  const kid = activeKid();
+  if (!kid) return;
+  ensureKidData(kid.id);
+  const entry = getWaEntry(kid.id, dateStr);
+  entry.message = text;
+  if (text.trim()) entry.checked = true;
+  data.whatsapp[kid.id][dateStr] = entry;
+  saveData();
+}
+function renderWhatsapp() {
+  const wrap = document.getElementById('waWeek');
+  wrap.innerHTML = '';
+  const kid = activeKid();
+  const streakLine = document.getElementById('streakLine');
+  if (!kid) { wrap.innerHTML = '<div class="empty-state">Add a child to start the WhatsApp log.</div>'; streakLine.textContent=''; return; }
+  ensureKidData(kid.id);
+  const dates = last7Dates().slice().reverse(); // most recent first
+  let checkedCount = 0;
+  dates.forEach(dateStr => {
+    const entry = getWaEntry(kid.id, dateStr);
+    if (entry.checked) checkedCount++;
+    const d = new Date(dateStr + 'T00:00:00');
+    const label = d.toLocaleDateString('en-IN', { weekday: 'short' });
+    const isToday = dateStr === todayISO();
+    const row = document.createElement('div');
+    row.className = 'wa-entry' + (isToday ? ' today' : '');
+    row.innerHTML = `
+      <div class="wa-entry-head">
+        <span class="wdate">${label}, ${fmtDate(dateStr)}${isToday ? ' (today)' : ''}</span>
+        <label><input type="checkbox" ${entry.checked ? 'checked' : ''} onchange="toggleWaChecked('${dateStr}')">Checked WhatsApp</label>
+      </div>
+      <textarea placeholder="Anything important from the school group today — homework, circulars, notices..." onblur="updateWaMessage('${dateStr}', this.value)">${escapeHtml(entry.message || '')}</textarea>
+    `;
+    wrap.appendChild(row);
+  });
+  streakLine.innerHTML = `Checked <b>${checkedCount} of 7</b> days this week.`;
+}
+
+/* ---------------- Events ---------------- */
+function addEvent() {
+  const kid = activeKid();
+  if (!kid) { alert('Add a child first, in the Kids tab.'); return; }
+  const title = document.getElementById('evTitle').value.trim();
+  const evdate = document.getElementById('evDate').value;
+  const notes = document.getElementById('evNotes').value.trim();
+  if (!title || !evdate) return;
+  data.events.push({ id: uid(), kidId: kid.id, title, date: evdate, notes });
+  document.getElementById('evTitle').value = '';
+  document.getElementById('evDate').value = '';
+  document.getElementById('evNotes').value = '';
+  saveData();
+  renderAll();
+}
+function deleteEvent(id) {
+  data.events = data.events.filter(e => e.id !== id);
+  saveData();
+  renderAll();
+}
+function dateBadge(dateStr) {
+  const today = todayISO();
+  const in7 = new Date(); in7.setDate(in7.getDate() + 7);
+  const in7iso = in7.toISOString().slice(0,10);
+  if (dateStr < today) return '<span class="li-badge past">Past</span>';
+  if (dateStr <= in7iso) return '<span class="li-badge soon">This week</span>';
+  return '<span class="li-badge upcoming">Upcoming</span>';
+}
+function renderEvents() {
+  const wrap = document.getElementById('eventsList');
+  wrap.innerHTML = '';
+  const kid = activeKid();
+  if (!kid) { wrap.innerHTML = '<div class="empty-state">Add a child to start logging events.</div>'; return; }
+  const items = data.events.filter(e => e.kidId === kid.id).sort((a,b) => a.date.localeCompare(b.date));
+  if (items.length === 0) { wrap.innerHTML = '<div class="empty-state"><div class="em-icon">&#128197;</div>No events added yet.</div>'; return; }
+  items.forEach(e => {
+    const row = document.createElement('div');
+    row.className = 'list-item';
+    row.innerHTML = `
+      <div class="li-main">
+        <div class="li-title">${escapeHtml(e.title)}</div>
+        <div class="li-date">${fmtDate(e.date)}</div>
+        ${e.notes ? `<div class="li-notes">${escapeHtml(e.notes)}</div>` : ''}
+      </div>
+      <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+        ${dateBadge(e.date)}
+        <button class="text-btn" onclick="deleteEvent('${e.id}')">Delete</button>
+      </div>
+    `;
+    wrap.appendChild(row);
+  });
+}
+
+/* ---------------- Exams ---------------- */
+function addExam() {
+  const kid = activeKid();
+  if (!kid) { alert('Add a child first, in the Kids tab.'); return; }
+  const subject = document.getElementById('exSubject').value.trim();
+  const exdate = document.getElementById('exDate').value;
+  const portion = document.getElementById('exPortion').value.trim();
+  if (!subject || !exdate) return;
+  data.exams.push({ id: uid(), kidId: kid.id, subject, date: exdate, portion });
+  document.getElementById('exSubject').value = '';
+  document.getElementById('exDate').value = '';
+  document.getElementById('exPortion').value = '';
+  saveData();
+  renderAll();
+}
+function deleteExam(id) {
+  data.exams = data.exams.filter(e => e.id !== id);
+  saveData();
+  renderAll();
+}
+function renderExams() {
+  const wrap = document.getElementById('examsList');
+  wrap.innerHTML = '';
+  const kid = activeKid();
+  if (!kid) { wrap.innerHTML = '<div class="empty-state">Add a child to start logging exams.</div>'; return; }
+  const items = data.exams.filter(e => e.kidId === kid.id).sort((a,b) => a.date.localeCompare(b.date));
+  if (items.length === 0) { wrap.innerHTML = '<div class="empty-state"><div class="em-icon">&#128221;</div>No exams added yet.</div>'; return; }
+  items.forEach(e => {
+    const row = document.createElement('div');
+    row.className = 'list-item';
+    row.innerHTML = `
+      <div class="li-main">
+        <div class="li-title">${escapeHtml(e.subject)}</div>
+        <div class="li-date">${fmtDate(e.date)}</div>
+        ${e.portion ? `<div class="li-notes">Portion: ${escapeHtml(e.portion)}</div>` : ''}
+      </div>
+      <div style="display:flex; flex-direction:column; align-items:flex-end; gap:6px;">
+        ${dateBadge(e.date)}
+        <button class="text-btn" onclick="deleteExam('${e.id}')">Delete</button>
+      </div>
+    `;
+    wrap.appendChild(row);
+  });
+}
+
+/* ---------------- Documents ---------------- */
+function addDocument() {
+  const kid = activeKid();
+  if (!kid) { alert('Add a child first, in the Kids tab.'); return; }
+  const fileInput = document.getElementById('docFile');
+  const label = document.getElementById('docLabel').value.trim();
+  const file = fileInput.files[0];
+  const statusEl = document.getElementById('docStatus');
+  if (!file) { alert('Choose a file to upload.'); return; }
+  const reader = new FileReader();
+  reader.onload = function() {
+    data.documents.push({
+      id: uid(), kidId: kid.id,
+      name: label || file.name,
+      filename: file.name,
+      type: file.type || 'file',
+      size: file.size,
+      dataUrl: reader.result,
+      uploadedAt: todayISO()
+    });
+    const ok = saveData();
+    statusEl.style.display = 'block';
+    if (ok) {
+      statusEl.textContent = 'Uploaded.';
+      document.getElementById('docLabel').value = '';
+      fileInput.value = '';
+    } else {
+      data.documents.pop();
+      statusEl.textContent = "Couldn't save — this file is too large for browser storage. Try a smaller/compressed file.";
+    }
+    renderAll();
+  };
+  reader.onerror = function() {
+    statusEl.style.display = 'block';
+    statusEl.textContent = 'Could not read that file. Please try again.';
+  };
+  reader.readAsDataURL(file);
+}
+function deleteDocument(id) {
+  data.documents = data.documents.filter(d => d.id !== id);
+  saveData();
+  renderAll();
+}
+function docIcon(type) {
+  if (type.includes('pdf')) return '&#128196;';
+  if (type.includes('image')) return '&#128247;';
+  if (type.includes('word') || type.includes('doc')) return '&#128221;';
+  return '&#128193;';
+}
+function fmtSize(bytes) {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024*1024) return Math.round(bytes/1024) + ' KB';
+  return (bytes/(1024*1024)).toFixed(1) + ' MB';
+}
+function renderDocuments() {
+  const wrap = document.getElementById('docsList');
+  wrap.innerHTML = '';
+  const kid = activeKid();
+  if (!kid) { wrap.innerHTML = '<div class="empty-state">Add a child to start uploading documents.</div>'; return; }
+  const items = data.documents.filter(d => d.kidId === kid.id).sort((a,b) => b.uploadedAt.localeCompare(a.uploadedAt));
+  if (items.length === 0) { wrap.innerHTML = '<div class="empty-state"><div class="em-icon">&#128193;</div>No documents uploaded yet.</div>'; return; }
+  items.forEach(d => {
+    const row = document.createElement('div');
+    row.className = 'doc-item';
+    row.innerHTML = `
+      <div class="doc-icon">${docIcon(d.type)}</div>
+      <div class="doc-main">
+        <div class="dname">${escapeHtml(d.name)}</div>
+        <div class="dmeta">${escapeHtml(d.filename)} · ${fmtSize(d.size)} · ${fmtDate(d.uploadedAt)}</div>
+      </div>
+      <div class="doc-actions">
+        <a href="${d.dataUrl}" target="_blank" rel="noopener">View</a>
+        <a href="${d.dataUrl}" download="${escapeAttr(d.filename)}">Download</a>
+        <button onclick="deleteDocument('${d.id}')">Delete</button>
+      </div>
+    `;
+    wrap.appendChild(row);
+  });
+}
+
+/* ---------------- Weekly task generator ---------------- */
+function computeWeeklyTasks() {
+  const kid = activeKid();
+  const tasks = [];
+  if (!kid) return tasks;
+  ensureKidData(kid.id);
+  const today = todayISO();
+  const in7 = new Date(); in7.setDate(in7.getDate() + 7);
+  const in7iso = in7.toISOString().slice(0,10);
+
+  // Overdue homework
+  const overdue = data.homework.filter(h => h.kidId === kid.id && !h.done && h.due && h.due < today);
+  if (overdue.length) {
+    tasks.push({ level: 'hi', text: `${overdue.length} homework item${overdue.length>1?'s':''} overdue — ${overdue.slice(0,3).map(h=>h.subject).join(', ')}${overdue.length>3?'…':''}` });
+  }
+  // Due this week
+  const dueSoon = data.homework.filter(h => h.kidId === kid.id && !h.done && h.due && h.due >= today && h.due <= in7iso);
+  if (dueSoon.length) {
+    tasks.push({ level: 'mid', text: `${dueSoon.length} homework item${dueSoon.length>1?'s':''} due this week` });
+  }
+  // WhatsApp gaps
+  const dates = last7Dates();
+  const missed = dates.filter(d => !getWaEntry(kid.id, d).checked).length;
+  if (missed >= 3) {
+    tasks.push({ level: 'mid', text: `Missed checking the school WhatsApp on ${missed} of the last 7 days — worth a quick scroll-back` });
+  } else if (missed > 0) {
+    tasks.push({ level: 'lo', text: `Missed WhatsApp on ${missed} day${missed>1?'s':''} this week — almost a clean streak` });
+  }
+  // Exams within 7 days
+  const examsSoon = data.exams.filter(e => e.kidId === kid.id && e.date >= today && e.date <= in7iso).sort((a,b)=>a.date.localeCompare(b.date));
+  examsSoon.forEach(e => {
+    tasks.push({ level: 'hi', text: `${e.subject} exam on ${fmtDate(e.date)}${e.portion ? ' — portion: ' + e.portion : ''}` });
+  });
+  // Events within 7 days
+  const eventsSoon = data.events.filter(e => e.kidId === kid.id && e.date >= today && e.date <= in7iso).sort((a,b)=>a.date.localeCompare(b.date));
+  eventsSoon.forEach(e => {
+    tasks.push({ level: 'mid', text: `${e.title} on ${fmtDate(e.date)}${e.notes ? ' — ' + e.notes : ''}` });
+  });
+  // Syllabus lag — subjects below 30% with at least 3 chapters
+  const subjects = data.syllabus[kid.id];
+  const lagging = Object.keys(subjects)
+    .map(s => {
+      const chs = subjects[s];
+      const pct = chs.length ? (chs.filter(c=>c.done).length / chs.length) : 0;
+      return { s, pct, len: chs.length };
+    })
+    .filter(x => x.len >= 3 && x.pct < 0.3)
+    .sort((a,b) => a.pct - b.pct)
+    .slice(0,2);
+  lagging.forEach(x => {
+    tasks.push({ level: 'lo', text: `${x.s} checklist is ${Math.round(x.pct*100)}% done — worth a look this week` });
+  });
+
+  if (tasks.length === 0) {
+    tasks.push({ level: 'lo', text: 'Nothing urgent — homework is current, WhatsApp is checked, syllabus is on track. Good week!' });
+  }
+  return tasks;
+}
+function renderDashboard() {
+  const kid = activeKid();
+  const statGrid = document.getElementById('statGrid');
+  const weeklyWrap = document.getElementById('weeklyTasks');
+  const dashSub = document.getElementById('dashSub');
+
+  if (!kid) {
+    statGrid.innerHTML = '';
+    weeklyWrap.innerHTML = '<div class="empty-state"><div class="em-icon">&#127891;</div>Add a child in the Kids tab to see their weekly focus.</div>';
+    dashSub.textContent = '';
+    return;
+  }
+  dashSub.textContent = `Auto-built for ${kid.name}, from homework, syllabus and WhatsApp check-ins.`;
+
+  const hw = data.homework.filter(h => h.kidId === kid.id);
+  const pending = hw.filter(h => !h.done).length;
+  const dates = last7Dates();
+  const waChecked = dates.filter(d => data.whatsapp[kid.id] && data.whatsapp[kid.id][d]).length;
+  const subjects = data.syllabus[kid.id] || {};
+  let totalCh = 0, doneCh = 0;
+  Object.values(subjects).forEach(chs => { totalCh += chs.length; doneCh += chs.filter(c=>c.done).length; });
+  const syllPct = totalCh ? Math.round((doneCh/totalCh)*100) : 0;
+
+  statGrid.innerHTML = `
+    <div class="stat-box"><div class="num">${pending}</div><div class="lab">Homework pending</div></div>
+    <div class="stat-box"><div class="num">${waChecked}/7</div><div class="lab">WhatsApp checked</div></div>
+    <div class="stat-box"><div class="num">${syllPct}%</div><div class="lab">Syllabus covered</div></div>
+  `;
+
+  const tasks = computeWeeklyTasks();
+  weeklyWrap.innerHTML = '';
+  tasks.forEach(t => {
+    const row = document.createElement('div');
+    row.className = 'task-row';
+    const iconChar = t.level === 'hi' ? '!' : (t.level === 'mid' ? '•' : '✓');
+    row.innerHTML = `<div class="task-icon ${t.level}">${iconChar}</div><div>${t.text}</div>`;
+    weeklyWrap.appendChild(row);
+  });
+
+  const notesWrap = document.getElementById('recentWaNotes');
+  notesWrap.innerHTML = '';
+  const notes = dates.slice().reverse()
+    .map(d => ({ date: d, entry: getWaEntry(kid.id, d) }))
+    .filter(x => x.entry.message && x.entry.message.trim())
+    .slice(0, 5);
+  if (notes.length === 0) {
+    notesWrap.innerHTML = '<div class="empty-note">No WhatsApp notes logged this week yet — add them from the WhatsApp tab.</div>';
+  } else {
+    notes.forEach(n => {
+      const row = document.createElement('div');
+      row.className = 'task-row';
+      row.innerHTML = `<div class="task-icon lo">&#128172;</div><div><b>${fmtDate(n.date)}:</b> ${escapeHtml(n.entry.message)}</div>`;
+      notesWrap.appendChild(row);
+    });
+  }
+}
+
+/* ---------------- Escaping ---------------- */
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+function escapeAttr(str) { return escapeHtml(str).replace(/'/g, "\\'"); }
+
+/* ---------------- Render all ---------------- */
+function renderAll() {
+  renderKidSelect();
+  renderKidList();
+  renderHomework();
+  renderSyllabus();
+  renderWhatsapp();
+  renderEvents();
+  renderExams();
+  renderDocuments();
+  renderDashboard();
+}
+
+/* ---------------- Init ---------------- */
+(function init() {
+  if (!data.activeKidId && data.kids.length) data.activeKidId = data.kids[0].id;
+  showTab('dashboard');
+})();
+</script>
+</body>
+</html>
